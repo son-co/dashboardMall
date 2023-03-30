@@ -72,10 +72,8 @@ onValue(dataAdv, (snapshot) => {
                if (childData[item][key] == true) {
                   age_adv.push(childKey);
                   gender_adv.push(item);
-                  // console.log(childData[item].video);
-                  // video.push(childData[item].video.Link);
+
                   for (let i in childData[item].video) {
-                     // console.log(i);
                      video.push({ name: i, info: childData[item].video[i] });
                   }
                }
@@ -83,11 +81,11 @@ onValue(dataAdv, (snapshot) => {
          }
       }
    });
-
-   var randomIndex = Math.floor(Math.random() * video.length);
+   var randomIndex = 0;
    var randomVideo = video[randomIndex];
 
-   // var videoName = "QuangCao/" + randomVideo.name + ".mp4";
+   localStorage.setItem("randomIndex", randomIndex);
+
    var videoName = "./dsQuangcao/" + randomVideo.name + ".mp4";
    var videoInfo = randomVideo.info;
 
@@ -104,11 +102,10 @@ onValue(dataAdv, (snapshot) => {
    var qc_video = document.querySelector(".qc-video");
 
    qc_video.src = videoName;
-   var videoTime;
    setTimeout(() => {
-      videoTime = Number(qc_video.duration) * 1000;
+      localStorage.setItem("videoTime", Number(qc_video.duration) * 1000);
       setInterval(() => {
-         randomIndex = Math.floor(Math.random() * video.length);
+         randomIndex = localStorage.getItem("randomIndex");
          randomVideo = video[randomIndex];
 
          //  videoName = "QuangCao/" + randomVideo.name + ".mp4";
@@ -130,42 +127,13 @@ onValue(dataAdv, (snapshot) => {
          qc_video.src = videoName;
 
          setTimeout(() => {
-            videoTime = Number(qc_video.duration) * 1000;
-            console.log(title, videoTime);
+            // videoTime = Number(qc_video.duration) * 1000;
+            localStorage.setItem("videoTime", Number(qc_video.duration) * 1000);
          }, 100);
-      }, videoTime);
-   }, 1000);
 
-   // var starsRef = Sref(firebase, videoName);
-   // getDownloadURL(starsRef).then((url) => {
-   //    qc_video.src = url;
-   // });
-
-   // setTimeout(function () {
-   //    var videoTime = Number(qc_video.duration) * 1000;
-   //    console.log(videoTime);
-   //    setInterval(function () {
-   //       // randomIndex = Math.floor(Math.random() * video.length);
-   //       randomVideo = video[randomIndex];
-
-   //       videoName = "QuangCao/" + randomVideo.name + ".mp4";
-   //       videoInfo = randomVideo.info;
-
-   //       des = videoInfo.des;
-   //       title = videoInfo.title;
-
-   //       document.querySelector("#title_adv").innerHTML =
-   //          `<strong>Title: </strong>` + title;
-   //       document.querySelector("#age_adv").innerHTML = getAge(age_adv[0]);
-   //       document.querySelector("#gender_adv").innerHTML =
-   //          "Intended for " + gender_adv[0];
-   //       document.querySelector("#des_adv").innerHTML = des;
-
-   //       starsRef = Sref(firebase, videoName);
-
-   //       getDownloadURL(starsRef).then((url) => {
-   //          qc_video.src = url;
-   //       });
-   //    }, videoTime);
-   // }, 1000);
+         randomIndex = Math.floor(Math.random() * video.length);
+         localStorage.setItem("randomIndex", randomIndex);
+         //
+      }, localStorage.getItem("videoTime"));
+   }, 1500);
 });
