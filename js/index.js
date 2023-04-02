@@ -2,14 +2,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-analytics.js";
 // import { getStorage } from "firebase/storage";
-// import {
-//    getStorage,
-//    ref as Sref,
-//    getDownloadURL,
-//    uploadBytesResumable,
-//    deleteObject,
-//    listAll,
-// } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-storage.js";
+import {
+   getStorage,
+   ref as Sref,
+   getDownloadURL,
+   uploadBytesResumable,
+   deleteObject,
+   listAll,
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-storage.js";
 //import { getDatabase, ref, onValue, query, limitToLast } from "./firebase/database";
 import {
    getDatabase,
@@ -36,7 +36,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const database = getDatabase(app);
-// const firebase = getStorage(app);
+const firebase = getStorage(app);
 // const storageRef = firebase.storage().ref();
 const dataAdv = query(ref(database, "Advertisement"), limitToLast(30));
 
@@ -136,4 +136,9 @@ onValue(dataAdv, (snapshot) => {
          //
       }, localStorage.getItem("videoTime"));
    }, 1500);
+});
+
+getDownloadURL(Sref(firebase, "images/image.jpg")).then((url) => {
+   // localStorage.setItem("imageAdv", url);
+   document.querySelector("#image_adv").src = url;
 });
