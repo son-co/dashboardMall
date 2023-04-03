@@ -29,17 +29,7 @@ const analytics = getAnalytics(app);
 
 function formaterDate(s) {
    var parts = s.split(":");
-   return (
-      parts[3] +
-      ":" +
-      parts[4] +
-      " " +
-      parts[2] +
-      "/" +
-      parts[1] +
-      "/" +
-      parts[0]
-   );
+   return parts[3] + ":" + parts[4] + " " + parts[2] + "/" + parts[1] + "/" + parts[0];
 }
 const database = getDatabase(app);
 const dataRef = query(ref(database, "floor1"), limitToLast(30));
@@ -85,35 +75,78 @@ onValue(dataRef3, (snapshot) => {
 const showstaff = document.querySelector("#showstaff section.content");
 
 const dataNhanVien = query(ref(database, "NhanVien"), limitToLast(30));
-var dtnv = [];
-var time = "";
+
 var html = "";
 
-function later(a, b) {
+function later(a, b, c, d) {
    var time1 = new Date(a);
    var time2 = new Date(b);
+   var time3 = new Date(c);
+   var time4 = new Date(d);
+
    const timeDiff = Math.abs(time2 - time1); // lấy giá trị tuyệt đối của hiệu của hai đối tượng Date
    const diffInMinutes = Math.floor(timeDiff / (1000 * 60)); // tính khoảng cách thời gian trong đơn vị phút
-   if (diffInMinutes < 60) {
-      return diffInMinutes + " minutes late";
-   } else {
-      var h = Math.floor(diffInMinutes / 60);
-      var m = diffInMinutes % 60;
 
-      return h + " hour " + m + " minutes late";
+   const timeDiff1 = Math.abs(time4 - time3); // lấy giá trị tuyệt đối của hiệu của hai đối tượng Date
+   const diffInMinutes1 = Math.floor(timeDiff1 / (1000 * 60)); // tính khoảng cách thời gian trong đơn vị phút
+
+   //Nếu giờ checkIn lớn hơn 8h và giwof checkOut bé hơn 17h thì Nhân viên di trễ về sớm
+   if (time1 > time2 && time3 < time4) {
+      //Nếu khoảng thời gian đi trễ < 60 phút và về sớm hơn 60 phút
+      if (diffInMinutes < 60 && diffInMinutes1 < 60) {
+         return diffInMinutes + " minutes late <br> " + "Come back" + diffInMinutes1 + "minutes early";
+         //Nếu đi trễ < 60 phút và về sớm hơn 60 phút
+      } else if (diffInMinutes < 60 && diffInMinutes1 >= 60) {
+         var h = Math.floor(diffInMinutes1 / 60);
+         var m = diffInMinutes1 % 60;
+         return diffInMinutes + " minutes late <br> " + "Come back " + h + " hour " + m + "minutes early";
+         //Nếu đi trễ hơn 60 phút và về sớm hơn 60 phút
+      } else if (diffInMinutes >= 60 && diffInMinutes1 < 60) {
+         var h = Math.floor(diffInMinutes / 60);
+         var m = diffInMinutes % 60;
+         return h + " hour " + m + " minutes late <br> " + "Come back " + diffInMinutes1 + "minutes early";
+      } else {
+         var h = Math.floor(diffInMinutes / 60);
+         var m = diffInMinutes % 60;
+
+         var h1 = Math.floor(diffInMinutes1 / 60);
+         var m1 = diffInMinutes1 % 60;
+         return h + " hour " + m + " minutes late <br> " + "Come back " + h1 + " hour " + m1 + "minutes early";
+      }
+      //Nếu giờ checkIn lớn hơn 8h thì nhân viên đi trễ
+   } else if (time1 > time2) {
+      if (diffInMinutes < 60) {
+         return diffInMinutes + " minutes late";
+      } else {
+         var h = Math.floor(diffInMinutes / 60);
+         var m = diffInMinutes % 60;
+
+         return h + " hour " + m + " minutes late";
+      }
+      //Nếu nhân viên checkOut bé hơn 5h thì nhân viên về sớm
+   } else if (time3 < time4) {
+      if (diffInMinutes1 < 60) {
+         return "Come back " + diffInMinutes1 + " minutes early";
+      } else {
+         var h = Math.floor(diffInMinutes1 / 60);
+         var m = diffInMinutes1 % 60;
+
+         return "Come back " + h + " hour " + m + " minutes early";
+      }
+   } else {
+      return "Registered";
    }
 }
 function checkNgaycong(a, b, dcheckIn) {
    var time1 = new Date(formatDateTimeAtt(dcheckIn, a));
    var time2 = new Date(formatDateTimeAtt(dcheckIn, "08:00"));
+   var time3 = new Date(formatDateTimeAtt(dcheckIn, b));
+   var time4 = new Date(formatDateTimeAtt(dcheckIn, "17:00"));
+
    if (a != "" && b != "") {
-      if (time1 > time2) {
-         return later(time1, time2);
-      } else {
-         return 1;
-      }
+      return later(time1, time2, time3, time4);
    } else {
-      return 0;
+      return "No attendance";
    }
 }
 
@@ -159,11 +192,7 @@ onValue(dataNhanVien, (snapshot) => {
             childData.attendance[item].checkOut +
             `</td>
               <td>` +
-            checkNgaycong(
-               childData.attendance[item].checkIn,
-               childData.attendance[item].checkOut,
-               item
-            ) +
+            checkNgaycong(childData.attendance[item].checkIn, childData.attendance[item].checkOut, item) +
             `</td>
             </tr>`;
       }
