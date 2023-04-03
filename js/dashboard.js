@@ -94,24 +94,39 @@ function later(a, b, c, d) {
    if (time1 > time2 && time3 < time4) {
       //Nếu khoảng thời gian đi trễ < 60 phút và về sớm hơn 60 phút
       if (diffInMinutes < 60 && diffInMinutes1 < 60) {
-         return diffInMinutes + " minutes late <br> " + "Come back" + diffInMinutes1 + "minutes early";
+         return diffInMinutes + " minutes late <br> " + "Come back" + diffInMinutes1 + " minutes early";
          //Nếu đi trễ < 60 phút và về sớm hơn 60 phút
       } else if (diffInMinutes < 60 && diffInMinutes1 >= 60) {
          var h = Math.floor(diffInMinutes1 / 60);
          var m = diffInMinutes1 % 60;
-         return diffInMinutes + " minutes late <br> " + "Come back " + h + " hour " + m + "minutes early";
+
+         if (m != 0) {
+            return diffInMinutes + " minutes late <br> " + "Come back " + h + " hour " + m + " minutes early";
+         }
+         return diffInMinutes + " minutes late <br> " + "Come back " + h + " hour  early";
          //Nếu đi trễ hơn 60 phút và về sớm hơn 60 phút
       } else if (diffInMinutes >= 60 && diffInMinutes1 < 60) {
          var h = Math.floor(diffInMinutes / 60);
          var m = diffInMinutes % 60;
-         return h + " hour " + m + " minutes late <br> " + "Come back " + diffInMinutes1 + "minutes early";
+         if (m != 0) {
+            return h + " hour " + m + " minutes late <br> " + "Come back " + diffInMinutes1 + " minutes early";
+         }
+         return h + " hour late <br> " + "Come back " + diffInMinutes1 + " minutes early";
       } else {
          var h = Math.floor(diffInMinutes / 60);
          var m = diffInMinutes % 60;
 
          var h1 = Math.floor(diffInMinutes1 / 60);
          var m1 = diffInMinutes1 % 60;
-         return h + " hour " + m + " minutes late <br> " + "Come back " + h1 + " hour " + m1 + "minutes early";
+         if (m != 0 && m1 != 0) {
+            return h + " hour " + m + " minutes late <br> " + "Come back " + h1 + " hour " + m1 + " minutes early";
+         } else if (m != 0) {
+            return h + " hour " + m + " minutes late <br> " + "Come back " + h1 + " hour early";
+         } else if (m1 != 0) {
+            return h + " hour late <br> " + "Come back " + h1 + " hour " + m1 + " minutes early";
+         } else {
+            return h + " hour late <br> " + "Come back " + h1 + " hour early";
+         }
       }
       //Nếu giờ checkIn lớn hơn 8h thì nhân viên đi trễ
    } else if (time1 > time2) {
@@ -121,7 +136,10 @@ function later(a, b, c, d) {
          var h = Math.floor(diffInMinutes / 60);
          var m = diffInMinutes % 60;
 
-         return h + " hour " + m + " minutes late";
+         if (m != 0) {
+            return "Come back " + h + " hour " + m + " minutes early";
+         }
+         return "Come back " + h + " hour early";
       }
       //Nếu nhân viên checkOut bé hơn 5h thì nhân viên về sớm
    } else if (time3 < time4) {
@@ -130,8 +148,10 @@ function later(a, b, c, d) {
       } else {
          var h = Math.floor(diffInMinutes1 / 60);
          var m = diffInMinutes1 % 60;
-
-         return "Come back " + h + " hour " + m + " minutes early";
+         if (m != 0) {
+            return "Come back " + h + " hour " + m + " minutes early";
+         }
+         return "Come back " + h + " hour early";
       }
    } else {
       return "Registered";
