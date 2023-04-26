@@ -76,95 +76,145 @@ const showstaff = document.querySelector("#showstaff section.content");
 
 const dataNhanVien = query(ref(database, "NhanVien"), limitToLast(30));
 
-var html = "";
+function timeStatus(dif1, dif2) {
+   if (dif1 >= 60 && dif2 >= 60) {
+      var h = Math.floor(dif1 / 60);
+      var m = dif1 % 60;
 
-function later(a, b, c, d) {
+      var h1 = Math.floor(dif2 / 60);
+      var m1 = dif2 % 60;
+
+      if (m != 0 && m1 != 0) {
+         return h + " hour " + m + " minutes late <br> Come back " + h1 + " hour " + m1 + " minutes early";
+      } else if (m != 0) {
+         return h + " hour " + m + " minutes late <br> Come back " + h1 + " hour early";
+      } else if (m1 != 0) {
+         return h + " hour late <br> Come back " + h1 + " hour " + m1 + " minutes early";
+      } else {
+         return h + " hour late <br> Come back " + h1 + " hour early";
+      }
+   } else if (dif1 < 60 && dif2 >= 60) {
+      var h = Math.floor(dif2 / 60);
+      var m = dif2 % 60;
+
+      if (m != 0 && dif1 != 0) {
+         return dif1 + " minutes late <br> " + "Come back " + h + " hour " + m + " minutes early";
+      } else if (m != 0 && dif1 == 0) {
+         return "Come back " + h + " hour " + m + " minutes early";
+      } else if (dif1 != 0 && m == 0) {
+         return dif1 + " minutes late <br> " + "Come back " + h + " hour  early";
+      } else {
+         return "Come back " + h + " hour early";
+      }
+   } else if (dif1 >= 60 && dif2 < 60) {
+      var h = Math.floor(dif1 / 60);
+      var m = dif1 % 60;
+
+      if (m != 0 && dif2 != 0) {
+         return h + " hour " + m + " minutes late <br> " + "Come back " + dif2 + " minutes early";
+      } else if (m != 0 && dif2 == 0) {
+         return h + " hour " + m + " minutes late";
+      } else if (dif2 != 0 && m == 0) {
+         return h + " hour late <br> " + "Come back " + dif2 + " minutes early";
+      } else {
+         return h + " hour late <br> ";
+      }
+   } else {
+      return dif1 + " minutes late <br> " + "Come back " + dif2 + " minutes early";
+   }
+}
+
+function timeStatusEarly(diffInMinutes1) {
+   if (diffInMinutes1 < 60) {
+      return "Come back " + diffInMinutes1 + " minutes early";
+   } else {
+      var h = Math.floor(diffInMinutes1 / 60);
+      var m = diffInMinutes1 % 60;
+      if (m != 0) {
+         return "Come back " + h + " hour " + m + " minutes early";
+      }
+      return "Come back " + h + " hour early";
+   }
+}
+function timeStatusLater(diffInMinutes) {
+   if (diffInMinutes < 60) {
+      return diffInMinutes + " minutes late";
+   } else {
+      var h = Math.floor(diffInMinutes / 60);
+      var m = diffInMinutes % 60;
+
+      if (m != 0) {
+         return h + " hour " + m + " minutes late";
+      }
+      return h + " hour late";
+   }
+}
+
+var html = "";
+function later(a, b, c, d, e, f) {
    var time1 = new Date(a);
    var time2 = new Date(b);
    var time3 = new Date(c);
    var time4 = new Date(d);
+   var time5 = new Date(e);
+   var time6 = new Date(f);
 
-   const timeDiff = Math.abs(time2 - time1); // lấy giá trị tuyệt đối của hiệu của hai đối tượng Date
-   const diffInMinutes = Math.floor(timeDiff / (1000 * 60)); // tính khoảng cách thời gian trong đơn vị phút
+   //Tính thời gian đi trễ ca sáng
+   const timeDiff = Math.abs(time1 - time2); // lấy giá trị tuyệt đối của hiệu của hai đối tượng Date
+   const diffInMinutes21 = Math.floor(timeDiff / (1000 * 60)); // tính khoảng cách thời gian trong đơn vị phút
 
-   const timeDiff1 = Math.abs(time4 - time3); // lấy giá trị tuyệt đối của hiệu của hai đối tượng Date
-   const diffInMinutes1 = Math.floor(timeDiff1 / (1000 * 60)); // tính khoảng cách thời gian trong đơn vị phút
+   //Tính thời gian về sớm ca sáng
+   const timeDiff1 = Math.abs(time5 - time3); // lấy giá trị tuyệt đối của hiệu của hai đối tượng Date
+   const diffInMinutes53 = Math.floor(timeDiff1 / (1000 * 60)); // tính khoảng cách thời gian trong đơn vị phút
 
-   //Nếu giờ checkIn lớn hơn 8h và giwof checkOut bé hơn 17h thì Nhân viên di trễ về sớm
-   if (time1 > time2 && time3 < time4) {
-      //Nếu khoảng thời gian đi trễ < 60 phút và về sớm hơn 60 phút
-      if (diffInMinutes < 60 && diffInMinutes1 < 60) {
-         return diffInMinutes + " minutes late <br> " + "Come back" + diffInMinutes1 + " minutes early";
-         //Nếu đi trễ < 60 phút và về sớm hơn 60 phút
-      } else if (diffInMinutes < 60 && diffInMinutes1 >= 60) {
-         var h = Math.floor(diffInMinutes1 / 60);
-         var m = diffInMinutes1 % 60;
+   //Tính thời gian về sớm ca chiều
+   const timeDiff2 = Math.abs(time4 - time3); // lấy giá trị tuyệt đối của hiệu của hai đối tượng Date
+   const diffInMinutes43 = Math.floor(timeDiff2 / (1000 * 60)); // tính khoảng cách thời gian trong đơn vị phút
 
-         if (m != 0) {
-            return diffInMinutes + " minutes late <br> " + "Come back " + h + " hour " + m + " minutes early";
-         }
-         return diffInMinutes + " minutes late <br> " + "Come back " + h + " hour  early";
-         //Nếu đi trễ hơn 60 phút và về sớm hơn 60 phút
-      } else if (diffInMinutes >= 60 && diffInMinutes1 < 60) {
-         var h = Math.floor(diffInMinutes / 60);
-         var m = diffInMinutes % 60;
-         if (m != 0) {
-            return h + " hour " + m + " minutes late <br> " + "Come back " + diffInMinutes1 + " minutes early";
-         }
-         return h + " hour late <br> " + "Come back " + diffInMinutes1 + " minutes early";
-      } else {
-         var h = Math.floor(diffInMinutes / 60);
-         var m = diffInMinutes % 60;
+   const timeDiff3 = Math.abs(time1 - time6); // lấy giá trị tuyệt đối của hiệu của hai đối tượng Date
+   const diffInMinutes16 = Math.floor(timeDiff3 / (1000 * 60)); // tính khoảng cách thời gian trong đơn vị phút
 
-         var h1 = Math.floor(diffInMinutes1 / 60);
-         var m1 = diffInMinutes1 % 60;
-         if (m != 0 && m1 != 0) {
-            return h + " hour " + m + " minutes late <br> " + "Come back " + h1 + " hour " + m1 + " minutes early";
-         } else if (m != 0) {
-            return h + " hour " + m + " minutes late <br> " + "Come back " + h1 + " hour early";
-         } else if (m1 != 0) {
-            return h + " hour late <br> " + "Come back " + h1 + " hour " + m1 + " minutes early";
-         } else {
-            return h + " hour late <br> " + "Come back " + h1 + " hour early";
-         }
+   //Làm cả ngày
+   if (diffInMinutes21 <= 60 && diffInMinutes43 <= 60) {
+      return "Work all day";
+   }
+
+   //checkIn bé hơn 14h
+   if (time1 < time5) {
+      if (time1 > time2 && time3 < time5) {
+         // return "time1 > time2 && time3 < time5";
+         return timeStatus(diffInMinutes21, diffInMinutes53);
+      } else if (time1 > time2) {
+         return timeStatusLater(diffInMinutes21);
+      } else if (time3 < time5) {
+         return timeStatusEarly(diffInMinutes53);
+      } else if ((diffInMinutes21 <= 30 && diffInMinutes53 <= 20) || (time1 < time2 && time3 > time5)) {
+         return "Registered";
       }
-      //Nếu giờ checkIn lớn hơn 8h thì nhân viên đi trễ
-   } else if (time1 > time2) {
-      if (diffInMinutes < 60) {
-         return diffInMinutes + " minutes late";
-      } else {
-         var h = Math.floor(diffInMinutes / 60);
-         var m = diffInMinutes % 60;
-
-         if (m != 0) {
-            return "Come back " + h + " hour " + m + " minutes early";
-         }
-         return "Come back " + h + " hour early";
+   }
+   if (time1 >= time6 || (time1 < time6 && diffInMinutes16 <= 20)) {
+      if (time1 > time6 && time3 < time4) {
+         // return "time1 > time6 && time3 < time4";
+         return timeStatus(diffInMinutes16, diffInMinutes43);
+      } else if (time1 > time6) {
+         return timeStatusLater(diffInMinutes16);
+      } else if (time3 < time4) {
+         return timeStatusEarly(diffInMinutes43);
+      } else if (diffInMinutes16 <= 30 && diffInMinutes43 <= 20) {
+         return "Registered";
       }
-      //Nếu nhân viên checkOut bé hơn 5h thì nhân viên về sớm
-   } else if (time3 < time4) {
-      if (diffInMinutes1 < 60) {
-         return "Come back " + diffInMinutes1 + " minutes early";
-      } else {
-         var h = Math.floor(diffInMinutes1 / 60);
-         var m = diffInMinutes1 % 60;
-         if (m != 0) {
-            return "Come back " + h + " hour " + m + " minutes early";
-         }
-         return "Come back " + h + " hour early";
-      }
-   } else {
-      return "Registered";
    }
 }
 function checkNgaycong(a, b, dcheckIn) {
    var time1 = new Date(formatDateTimeAtt(dcheckIn, a));
-   var time2 = new Date(formatDateTimeAtt(dcheckIn, "08:00"));
+   var time2 = new Date(formatDateTimeAtt(dcheckIn, "07:00"));
    var time3 = new Date(formatDateTimeAtt(dcheckIn, b));
-   var time4 = new Date(formatDateTimeAtt(dcheckIn, "17:00"));
+   var time4 = new Date(formatDateTimeAtt(dcheckIn, "22:00"));
+   var time5 = new Date(formatDateTimeAtt(dcheckIn, "14:00"));
+   var time6 = new Date(formatDateTimeAtt(dcheckIn, "14:10"));
 
    if (a != "" && b != "") {
-      return later(time1, time2, time3, time4);
+      return later(time1, time2, time3, time4, time5, time6);
    } else {
       return "No attendance";
    }
@@ -192,9 +242,6 @@ onValue(dataNhanVien, (snapshot) => {
       var ngaycong = childData.ngaycong;
 
       for (let item in childData.attendance) {
-         // for (let key in childData.attendance[item]) {
-         //   console.log(childData.attendance[item])
-         // }
          count += 1;
          tr +=
             `
