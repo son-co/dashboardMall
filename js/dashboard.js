@@ -174,13 +174,16 @@ function later(a, b, c, d, e, f) {
    const timeDiff3 = Math.abs(time1 - time6); // lấy giá trị tuyệt đối của hiệu của hai đối tượng Date
    const diffInMinutes16 = Math.floor(timeDiff3 / (1000 * 60)); // tính khoảng cách thời gian trong đơn vị phút
 
+   const timeDiff4 = Math.abs(time5 - time1); // lấy giá trị tuyệt đối của hiệu của hai đối tượng Date
+   const diffInMinutes15 = Math.floor(timeDiff4 / (1000 * 60)); // tính khoảng cách thời gian trong đơn vị phút
+
    //Làm cả ngày
    if (diffInMinutes21 <= 60 && diffInMinutes43 <= 60) {
       return "Work all day";
    }
 
    //checkIn bé hơn 14h
-   if (time1 < time5) {
+   if (time1 < time5 && diffInMinutes15 >= 10) {
       if (time1 > time2 && time3 < time5) {
          // return "time1 > time2 && time3 < time5";
          return timeStatus(diffInMinutes21, diffInMinutes53);
